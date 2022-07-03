@@ -24,7 +24,7 @@ class BotDecorator(object):
         self._more_keyboard = keyboard
 
     def save_points(self):
-        with open("points.json", 'w') as points:
+        with open("Settings/points.json", 'w') as points:
             json.dump(self._points, points)
 
     def _create_work_menu(self):
@@ -42,7 +42,7 @@ class BotDecorator(object):
         self._taxes_keyboard = keyboard
 
     def read_settings(self):
-        with open("settings.json") as settings:
+        with open("Settings/settings.json") as settings:
             data = json.load(settings)
             self._key = data["key"]
             self._people_id_name = {
@@ -52,7 +52,7 @@ class BotDecorator(object):
             self._create_more_menu()
             self._create_work_menu()
             self._create_taxes_menu()
-        with open("points.json") as points:
+        with open("Settings/points.json") as points:
             data = json.load(points)
             self._points = {
                 int(i): int(points) for i, points in data.items()}
@@ -84,7 +84,7 @@ class BotDecorator(object):
 
     def log(self, user, list_name, action_id):
         time = datetime.datetime.now()
-        with open("log.txt", 'a') as log:
+        with open("Settings/log.txt", 'a') as log:
             log.write(f"{time} {self._people_id_name[user]} {getattr(self, '_' + list_name)[action_id][0]} Цена:{getattr(self, '_' + list_name)[action_id][1]} Баланс:{self._points[user]}\n")
 
     def get_balance(self):

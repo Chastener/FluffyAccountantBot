@@ -100,11 +100,15 @@ class BotDecorator(object):
                 self._bot.send_message(call.message.chat.id,
                                        text="Выбирай",
                                        reply_markup=getattr(self, "_" + data[1] + "_keyboard"))
-            if data[0] == "work":
+            elif data[0] == "work":
                 for user in self._people_id_name.keys():
                     if user != call.message.chat.id:
+                        keyboard = telebot.types.InlineKeyboardMarkup()
+                        keyboard.add(telebot.types.InlineKeyboardButton(text="Отклонить",
+                                                                        callback_data=f"decline_{call.message.chat.id}_{data[1]}"))
                         self._bot.send_message(user,
-                                               text=f"{self._people_id_name[call.message.chat.id]} сделал(а) {self._work[int(data[1])][0]}")
+                                               text=f"{self._people_id_name[call.message.chat.id]} сделал(а) {self._work[int(data[1])][0]}",
+                                               reply_markup=keyboard)
                     else:
                         self._points[user] += self._work[int(data[1])][1]
                         message = f"Умничка, тебе начислено {self._work[int(data[1])][1]} баллов.\nТекущий баланс:{self._points[user]}"
@@ -113,7 +117,7 @@ class BotDecorator(object):
                                                 reply_markup=self._more_keyboard)
                         self.log(user, "work", int(data[1]))
                         self.save_points()
-            if data[0] == "taxes":
+            elif data[0] == "taxes":
                 user = call.message.chat.id
                 self._points[user] -= self._taxes[int(data[1])][1]
                 message = f"Косяк, косяк... Лови минус {self._taxes[int(data[1])][1]} баллов.\nТекущий баланс:{self._points[user]}"
@@ -122,11 +126,16 @@ class BotDecorator(object):
                                        reply_markup=self._more_keyboard)
                 self.save_points()
                 self.log(user, "taxes", int(data[1]))
-            if data[0] == "balance":
+            elif data[0] == "balance":
                 self._bot.send_message(call.message.chat.id,
                                        text=self.get_balance(),
                                        reply_markup=self._more_keyboard)
-
+            elif data[0] == "decline":
+                self._points[int(data[1])] -= self._work[int(data[2])][1]
+                self._bot.send_message(int(data[1]),
+                                       text=f"{self._people_id_name[call.message.chat.id]} отклонил(а) {self._work[int(data[2])][0]}.\nТекущий баланс:{self._points[int(data[1])]}")
+                self.save_points()
+                
 
 helper = BotDecorator()
 bot = telebot.TeleBot(helper.get_bot_key())

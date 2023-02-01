@@ -57,7 +57,6 @@ class BotDecorator(object):
             self._points = {
                 int(i): int(points) for i, points in data.items()}
 
-
     def read_csv_list(self, file):
         with open(file) as f:
             reader = csv.reader(f)
@@ -135,21 +134,4 @@ class BotDecorator(object):
                 self._bot.send_message(int(data[1]),
                                        text=f"{self._people_id_name[call.message.chat.id]} отклонил(а) {self._work[int(data[2])][0]}.\nТекущий баланс:{self._points[int(data[1])]}")
                 self.save_points()
-                
 
-helper = BotDecorator()
-bot = telebot.TeleBot(helper.get_bot_key())
-helper.set_bot(bot)
-
-
-@bot.message_handler(content_types=["text"])
-def get_text_messages(message):
-    helper.get_text_messages(message)
-
-
-@bot.callback_query_handler(func=lambda call: True)
-def callback_worker(call):
-    helper.callback_worker(call)
-
-
-bot.polling(none_stop=True, interval=0)

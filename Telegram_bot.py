@@ -2,10 +2,11 @@ import telebot
 import csv
 import json
 import datetime
+from bot import Bot
 #TODO "" everywhere
         
 
-class BotDecorator(object):
+class BotDecorator(Bot):
     """docstring for Bot"""
 
     def __init__(self):
@@ -44,7 +45,6 @@ class BotDecorator(object):
     def read_settings(self):
         with open("Settings/settings.json") as settings:
             data = json.load(settings)
-            self._key = data["key"]
             self._people_id_name = {
                 int(i): name for i, name in data["people_id_name"].items()}
             self._work = self.read_csv_list(data["files"]["work"])#TODO keyboard creation to method
@@ -64,12 +64,6 @@ class BotDecorator(object):
             for i, row in enumerate(reader):
                 lst.append( (row[0], int(row[1])) )  # TODO избавиться от флоатов?
         return lst
-
-    def get_bot_key(self):
-        return self._key
-
-    def set_bot(self, bot):
-        self._bot = bot
 
     def get_text_messages(self, message):
         if message.from_user.id in self._people_id_name:

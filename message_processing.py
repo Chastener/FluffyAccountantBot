@@ -31,7 +31,9 @@ class MessageHandler(Bot):
 
     def process_callback(self, call):
         data = call.data.split("_")
-        if data[0] == "expenses":
+        if call.data == "expenses_balance":
+            self._cost_accounting.get_balance(call)
+        elif data[0] == "expenses":
             self._cost_accounting.callback_worker(call)
         else:
             self._bot_decorator.callback_worker(call)

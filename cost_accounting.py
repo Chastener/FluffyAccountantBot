@@ -32,20 +32,26 @@ class CostAccounting(Bot):
                                                         callback_data="expenses_balance"))
         self._more_keyboard = keyboard
 
-    def callback_worker(self, call):
-        call_data = call.data.split("_")
+    def get_balance(self, call):
         categories_balance = ""
+        total_balance = 0
         with open("Settings/categories.json") as categories:
             data = json.load(categories)
             for category in data["categories"]:
-                if call.data == "expenses_balance":
-                    categories_balance += f"{category['name']}:{category['current_expenses']}/{category['limit_expenses']}\n"
-                else:
-                    if category["name"] == call_data[1]:
-                        category["current_expenses"] += float(call_data[2])
-                        with open("Settings/categories.json", "w") as outfile:
-                            json.dump(data, outfile)
-                        self._bot.send_message(call.message.chat.id,
-                                               text=f"Вы внесли затраты {call_data[2]} бел рублей в категорию {category['name']}\n"
-                                               f"Текущие расходы:{category['current_expenses']}/{category['limit_expenses']}")
-            self._bot.send_message(call.message.chat.id, text=categories_balance)
+                categories_balance += f"{category['name']}:{category['current_expenses']}/{category['limit_expenses']}\n"
+                total_balance += category['current_expenses']
+            self._bot.send_message(call.message.chat.id, text=categories_balance + f"\nИтого затрат: {total_balance}")
+
+    def callback_worker(self, call):
+        call_data = call.data.split("_")
+        with open("Settings/categories.json") as categories:
+            data = json.load(categories)
+            for category in data["categories"]:
+                if category["name"] == call_data[1]:
+                    current_expenses = category["current_expenses"] + float(call_data[2])
+                    category["current_expenses"] = round(current_expenses, 2)
+                    with open("Settings/categories.json", "w") as outfile:
+                        json.dump(data, outfile)
+                    self._bot.send_message(call.message.chat.id,
+                                           text=f"Вы внесли затраты {call_data[2]} бел рублей в категорию {category['name']}\n"
+                                           f"Текущие расходы:{category['current_expenses']}/{category['limit_expenses']}")

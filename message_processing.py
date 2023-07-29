@@ -33,6 +33,8 @@ class MessageHandler(Bot):
         data = call.data.split("_")
         if call.data == "expenses_balance":
             self._cost_accounting.get_balance(call)
+        elif call.data == "expenses_to_zero":
+            self._cost_accounting.to_zero()
         elif data[0] == "expenses":
             self._cost_accounting.callback_worker(call)
         else:

@@ -30,7 +30,19 @@ class CostAccounting(Bot):
                 callback_data=f"expenses_{self._categories[i].name}_{message.html_text}"))
         keyboard.add(telebot.types.InlineKeyboardButton(text="Текущие расходы",
                                                         callback_data="expenses_balance"))
+        keyboard.add(telebot.types.InlineKeyboardButton(text="Обнулить",
+                                                        callback_data="expenses_to_zero"))
         self._more_keyboard = keyboard
+
+    def to_zero(self):
+        data = []
+        with open("Settings/categories.json") as categories:
+            data = json.load(categories)
+            for category in data["categories"]:
+                category["current_expenses"] = 0.
+        with open("Settings/categories.json", "w") as outfile:
+            json.dump(data, outfile)
+
 
     def get_balance(self, call):
         categories_balance = ""

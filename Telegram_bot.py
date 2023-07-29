@@ -22,6 +22,8 @@ class BotDecorator(Bot):
                                                         callback_data="keyboard_taxes"))
         keyboard.add(telebot.types.InlineKeyboardButton(text="Баланс",
                                                         callback_data="balance"))
+        keyboard.add(telebot.types.InlineKeyboardButton(text="Обнулить",
+                                                        callback_data="to_zero"))
         self._more_keyboard = keyboard
 
     def save_points(self):
@@ -128,4 +130,8 @@ class BotDecorator(Bot):
                 self._bot.send_message(int(data[1]),
                                        text=f"{self._people_id_name[call.message.chat.id]} отклонил(а) {self._work[int(data[2])][0]}.\nТекущий баланс:{self._points[int(data[1])]}")
                 self.save_points()
-
+            elif call.data == "to_zero":
+                print("telebot_to_zero")
+                for key in self._points.keys():
+                    self._points[key] = 0;
+                self.save_points()

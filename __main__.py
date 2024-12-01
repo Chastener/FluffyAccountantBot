@@ -14,4 +14,4 @@ if __name__ == '__main__':
     def callback_worker(call):
         helper.callback_worker(call)
 
-    bot.polling(none_stop=True, interval=0)
+    bot.infinity_polling()

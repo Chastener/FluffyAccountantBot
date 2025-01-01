@@ -88,6 +88,11 @@ class BotDecorator(Bot):
             balance += f"{self._people_id_name[user]}: {self._points[user]} баллов.\n"
         return balance
 
+    def set_points_to_zero(self):
+        for key in self._points.keys():
+            self._points[key] = 0;
+        self.save_points()
+
     def callback_worker(self, call):
         if call.message.chat.id in self._people_id_name:
             data = call.data.split("_")
@@ -131,7 +136,11 @@ class BotDecorator(Bot):
                                        text=f"{self._people_id_name[call.message.chat.id]} отклонил(а) {self._work[int(data[2])][0]}.\nТекущий баланс:{self._points[int(data[1])]}")
                 self.save_points()
             elif call.data == "to_zero":
-                print("telebot_to_zero")
-                for key in self._points.keys():
-                    self._points[key] = 0;
-                self.save_points()
+                keyboard = telebot.types.InlineKeyboardMarkup()
+                keyboard.add(telebot.types.InlineKeyboardButton(text="Обнулить",
+                                                                callback_data="to_zero_approval"))
+
+                self._bot.send_message(call.message.chat.id, text="Вы уверены?", reply_markup=keyboard)
+            elif call.data == "to_zero_approval":
+                self.set_points_to_zero()
+                self._bot.send_message(call.message.chat.id, text="Готово")

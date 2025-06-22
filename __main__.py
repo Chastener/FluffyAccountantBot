@@ -12,6 +12,7 @@ if __name__ == '__main__':
 
     @bot.callback_query_handler(func=lambda call: True)
     def callback_worker(call):
+        print("in")
         message_handler.process_callback(call)
 
     bot.infinity_polling()
